@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
+<!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8" lang="en-US"> <![endif]-->
+<!--[if IE 8]>         <html class="no-js lt-ie9" lang="en-US"> <![endif]-->
+<!--[if gt IE 8]><!-->
+<!--<![endif]-->
+<!--[if gte IE 9] <style type="text/css"> .gradient {filter: none;}</style><![endif]-->
+<!--[if !IE]><html lang="en"><![endif]-->
+<html lang="en-US" class="no-js">
+	<head>
+		<meta charset="UTF-8" />
+		<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+		<!-- Required meta tags for responsive -->
+		<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+		<!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+		<!-- Favicon and touch icons -->
+		<link rel="icon" type="image/png" sizes="16x16" href="assets/img/favicon/favicon-16x16.png" />
+		<meta name="misapplication-TileColor" content="#ffffff" />
+		<meta name="theme-color" content="#ffffff" />
+		<!-- Twitter Card data -->
+		<meta name="twitter:card" content="" />
+		<meta name="twitter:site" content="@twitter_username" />
+		<meta name="twitter:title" content="" />
+		<meta name="twitter:description" content="" />
+		<meta name="twitter:image" content="" />
+		<!-- Open Graph data -->
+		<meta property="og:title" content="" />
+		<meta property="og:type" content="article" />
+		<meta property="og:url" content="" />
+		<meta property="og:image" content="" />
+		<meta property="og:description" content="" />
+		<meta property="og:site_name" content="R" />
+		<meta property="fb:admins" content="Facebook numeric ID" />
+		<!-- gmail verification -->
+		<meta name="google-site-verification" content="" />
+		<!-- Website title -->
+		<title>Home</title>
+		<link rel="stylesheet" href="assets/css/bootstrap-icons.css" />
+		<link rel="stylesheet" href="assets/css/bootstrap.min.css" />
+		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datetimepicker/4.17.47/css/bootstrap-datetimepicker.min.css" />
+		<link rel="stylesheet" href="http://code.jquery.com/ui/1.13.0/themes/base/jquery-ui.css" />
+		<!-- Main CSS -->
+		<link rel="stylesheet" type="text/css" href="assets/css/style.css" />
+		<!-- jQuery (necessary for jQuery plugins) -->
+		<script src="assets/js/jquery-3.6.0.min.js"></script>
+		<script src="assets/js/jquery-ui.min.js"></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
+		<script src="https://cdn.jsdelivr.net/npm/moment-precise-range-plugin@1.3.0/moment-precise-range.min.js"></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/eonasdan-bootstrap-datetimepicker/4.17.47/js/bootstrap-datetimepicker.min.js"></script>
+	</head>
+
+	<body>
+		<!-- Main Coding Start Here -->
+
+		<div class="remaining-date p-5">
+			<div class="container">
+				<div class="row">
+					<div class="col-lg-8 mx-auto">
+						<h2 class="display-6 text-center">Event remaining date by onChange js event</h2>
+						<form action="#" class="form shadow rounded p-5">
+							<div class="form-group mb-3">
+								<h3 class="mb-0 fs-5 fw-normal border-bottom pb-2 text-dark">
+									<var>Event Remaining From Now</var> :
+									<br /> <span class="text-primary d-block border-top pt-1 mt-1" id="remaining-date-time"></span>
+								</h3>
+							</div>
+							<div class="form-group mb-3">
+								<label for="#" class="col-form-label">Event Start Date:</label>
+								<div class="flex-grow-1">
+									<input type="text" placeholder="YYYY-MM-DD" class="form-control rounded-pill date-picker ps-4" id="event-date" />
+								</div>
+							</div>
+							<div class="form-group mb-3">
+								<label for="#" class="col-form-label">Event Start Time:</label>
+								<div class="flex-grow-1">
+									<input type="text" placeholder="00:00" class="form-control rounded-pill time-picker ps-4" id="event-time" />
+								</div>
+							</div>
+						</form>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<script type="text/javascript">
+			/**
+			 * @init  {datepicker}
+			 * @init  {timepicker}
+			 */
+			$(function () {
+				if ($('.date-picker').length) {
+					$('.date-picker').datepicker({
+						minDate: 0,
+						maxDate: '+1M +10D',
+						dateFormat: 'yy-mm-dd',
+					});
+				}
+				if ($('.time-picker').length) {
+					$('.time-picker').datetimepicker({
+						format: 'LT',
+						icons: {
+							up: 'bi bi-chevron-up',
+							down: 'bi bi-chevron-down',
+						},
+					});
+				}
+			});
+
+			/**
+			 * @init  {remainingDateTime}
+			 */
+			$(function () {
+				let dateObj = {};
+				function remainingDateTime({ date = undefined, time = undefined }) {
+					if (date !== undefined && date !== '' && time !== undefined && time !== '') {
+						let remaining;
+						let selectedDate = moment(date + ' ' + time).format();
+						let isToday = moment(moment(selectedDate, 'DD-MM-YYYY')).isSame(moment(moment().format(), 'DD-MM-YYYY'), 'day');
+						if (isToday) {
+							let isBeforeTime = moment(moment(selectedDate).format()).isSameOrBefore(moment().format());
+							isBeforeTime ? (remaining = 'Time is not valid') : (remaining = moment.preciseDiff(selectedDate, moment().format()));
+						} else {
+							remaining = moment.preciseDiff(selectedDate, moment().format());
+						}
+						$('#remaining-date-time').text(remaining);
+					}
+				}
+
+				dateObj['date'] = $('#event-date').val();
+				dateObj['time'] = $('#event-time').val();
+				remainingDateTime(dateObj);
+
+				$('#event-date').on('change', function (e) {
+					let date = $(this).val();
+					if (date) {
+						dateObj['date'] = date;
+						remainingDateTime(dateObj);
+					}
+				});
+
+				$('#event-time').on('dp.change', function (e) {
+					if (e.date._d) {
+						let time = moment(e.date._d).format('hh:mm A');
+						dateObj['time'] = time;
+						remainingDateTime(dateObj);
+					}
+				});
+			});
+		</script>
+
+		<!-- Main Coding End -->
+		<!-- Include all compiled plugins (below), or include individual files as needed -->
+		<script src="assets/js/bootstrap.bundle.min.js"></script>
+		<!-- Script JS -->
+		<script src="assets/js/script.js"></script>
+	</body>
+</html>
